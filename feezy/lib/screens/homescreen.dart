@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'creategroups.dart';
 import 'groupscreen.dart';
 import 'payments_screen.dart';
+import 'notification_screen.dart';
+import 'profile_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   final String? organizationName;
@@ -37,10 +39,10 @@ class HomeScreen extends StatelessWidget {
               MaterialPageRoute(builder: (context) => PaymentsScreen()),
             );
           } else if (index == 3) {
-            // Navigator.pushReplacement(
-            //   context,
-            //   MaterialPageRoute(builder: (context) => ProfileScreen()),
-            // );
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => ProfileScreen()),
+            );
           }
           // Do nothing for index == 0 (Home)
         },
@@ -78,7 +80,15 @@ class HomeScreen extends StatelessWidget {
                             const Spacer(),
                             Stack(
                               children: [
-                                const Icon(Icons.notifications, color: Colors.white),
+                                IconButton(
+                                  icon: const Icon(Icons.notifications, color: Colors.white),
+                                  onPressed: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(builder: (context) => const NotificationScreen()),
+                                    );
+                                  },
+                                ),
                                 Positioned(
                                   top: 0,
                                   right: 0,

@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'homescreen.dart';
 import 'groupscreen.dart';
-// import 'profile_screen.dart'; // Uncomment and implement if you have a profile screen
+import 'notification_screen.dart';
+import 'profile_screen.dart';
 
 class PaymentsScreen extends StatelessWidget {
   const PaymentsScreen({Key? key}) : super(key: key);
@@ -42,7 +43,12 @@ class PaymentsScreen extends StatelessWidget {
                           children: [
                             IconButton(
                               icon: const Icon(Icons.notifications, color: Colors.white),
-                              onPressed: () {},
+                              onPressed: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(builder: (context) => const NotificationScreen()),
+                                );
+                              },
                             ),
                             Positioned(
                               right: 8,
@@ -150,10 +156,10 @@ class PaymentsScreen extends StatelessWidget {
                 MaterialPageRoute(builder: (context) => GroupScreen()),
               );
             } else if (index == 3) {
-              // Navigator.pushReplacement(
-              //   context,
-              //   MaterialPageRoute(builder: (context) => ProfileScreen()),
-              // );
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (context) => ProfileScreen()),
+              );
             }
             // Do nothing for index == 2 (Payments)
           },
@@ -230,7 +236,17 @@ class _PaymentsList extends StatelessWidget {
                     const Spacer(),
                     IconButton(
                       icon: const Icon(Icons.more_vert, color: Colors.black54),
-                      onPressed: () {},
+                      onPressed: () {
+                        showModalBottomSheet(
+                          context: context,
+                          isScrollControlled: true,
+                          backgroundColor: Colors.transparent,
+                          builder: (context) => PaymentMarkPaidSheet(
+                            name: payment['name'],
+                            amount: payment['amount'],
+                          ),
+                        );
+                      },
                     ),
                   ],
                 ),
@@ -239,6 +255,128 @@ class _PaymentsList extends StatelessWidget {
           ),
         );
       },
+    );
+  }
+}
+
+class PaymentMarkPaidSheet extends StatefulWidget {
+  final String name;
+  final int amount;
+  const PaymentMarkPaidSheet({Key? key, required this.name, required this.amount}) : super(key: key);
+
+  @override
+  State<PaymentMarkPaidSheet> createState() => _PaymentMarkPaidSheetState();
+}
+
+class _PaymentMarkPaidSheetState extends State<PaymentMarkPaidSheet> {
+  int? _selectedMethod;
+  final List<String> _methods = ['Cash', 'Bank Transfer', 'UPI Transfer'];
+
+  @override
+  Widget build(BuildContext context) {
+    return DraggableScrollableSheet(
+      initialChildSize: 0.55,
+      minChildSize: 0.3,
+      maxChildSize: 0.7,
+      builder: (context, scrollController) => Container(
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+        ),
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+        child: SingleChildScrollView(
+          controller: scrollController,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Align(
+                alignment: Alignment.topRight,
+                child: GestureDetector(
+                  onTap: () => Navigator.pop(context),
+                  child: const Icon(Icons.close, size: 28, color: Colors.black38),
+                ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                'Are you sure you want to mark ₹${widget.amount} from ${widget.name.toLowerCase()} as paid?',
+                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+              ),
+              const SizedBox(height: 24),
+              Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(color: Color(0xFFE5E5E5)),
+                ),
+                child: Column(
+                  children: List.generate(_methods.length, (i) {
+                    return Column(
+                      children: [
+                        ListTile(
+                          title: Text(_methods[i]),
+                          trailing: Radio<int>(
+                            value: i,
+                            groupValue: _selectedMethod,
+                            onChanged: (val) {
+                              setState(() => _selectedMethod = val);
+                            },
+                            activeColor: Color(0xFF024C3C),
+                          ),
+                          onTap: () => setState(() => _selectedMethod = i),
+                        ),
+                        if (i < _methods.length - 1)
+                          const Divider(height: 1, color: Color(0xFFE5E5E5)),
+                      ],
+                    );
+                  }),
+                ),
+              ),
+              const SizedBox(height: 16),
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
+                decoration: BoxDecoration(
+                  color: Color(0xFFF5F5F5),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: Color(0xFFE5E5E5)),
+                ),
+                child: const Text(
+                  'Add a note',
+                  style: TextStyle(color: Color(0xFFBDBDBD), fontSize: 16),
+                ),
+              ),
+              const SizedBox(height: 24),
+              Center(
+                child: SizedBox(
+                  width: double.infinity,
+                  height: 48,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      // Handle confirm
+                      Navigator.pop(context);
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF024C3C),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(24),
+                      ),
+                      elevation: 0,
+                    ),
+                    child: const Text(
+                      'Confirm',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 18,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 } 

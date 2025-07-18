@@ -3,6 +3,8 @@ import 'creategroups.dart';
 import 'homescreen.dart';
 import 'payments_screen.dart';
 import 'batch_info_screen.dart';
+import 'notification_screen.dart';
+import 'profile_screen.dart';
 
 class GroupScreen extends StatefulWidget {
   const GroupScreen({Key? key}) : super(key: key);
@@ -54,7 +56,12 @@ class _GroupScreenState extends State<GroupScreen> {
                   children: [
                     IconButton(
                       icon: const Icon(Icons.notifications_none, color: Color(0xFF064C3B)),
-                      onPressed: () {},
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => const NotificationScreen()),
+                        );
+                      },
                     ),
                     Positioned(
                       right: 8,
@@ -283,10 +290,10 @@ class _GroupScreenState extends State<GroupScreen> {
               MaterialPageRoute(builder: (context) => PaymentsScreen()),
             );
           } else if (index == 3) {
-            // Navigator.pushReplacement(
-            //   context,
-            //   MaterialPageRoute(builder: (context) => ProfileScreen()),
-            // );
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => ProfileScreen()),
+            );
           }
           // Do nothing for index == 1 (Groups)
         },

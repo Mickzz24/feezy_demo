@@ -43,7 +43,7 @@ class _LoginScreenState extends State<LoginScreen> {
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 24.0),
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const SizedBox(height: 60),
               
@@ -196,28 +196,28 @@ class _LoginScreenState extends State<LoginScreen> {
                   ],
                 ),
                 const SizedBox(height: 90),
-                GestureDetector(
-                  onTap: _agreed
-                      ? () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => VerifyOtpScreen(),
-                            ),
-                          );
-                        }
-                      : null,
-                  child: Stack(
-                    alignment: Alignment.center,
-                    children: [
-                      Image.asset(
-                        'lib/assets/Button (6).png',
-                        width: 240,
-                        height: 60,
-                        
-                      ),
-                      
-                    ],
+                Center(
+                  child: GestureDetector(
+                    onTap: _agreed
+                        ? () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => VerifyOtpScreen(),
+                              ),
+                            );
+                          }
+                        : null,
+                    child: Stack(
+                      alignment: Alignment.center,
+                      children: [
+                        Image.asset(
+                          'lib/assets/Button (6).png',
+                          width: 240,
+                          height: 60,
+                        ),
+                      ],
+                    ),
                   ),
                 ),
                 const SizedBox(height: 40),
