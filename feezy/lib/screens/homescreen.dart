@@ -44,7 +44,7 @@ class HomeScreen extends StatelessWidget {
               MaterialPageRoute(builder: (context) => ProfileScreen()),
             );
           }
-          // Do nothing for index == 0 (Home)
+         
         },
       ),
       body: SafeArea(

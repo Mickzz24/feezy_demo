@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'verify_otp.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class Country {
   final String flag;
@@ -18,6 +20,7 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _phoneController = TextEditingController();
   bool _agreed = false;
+  bool _loading = false;
 
   final List<Country> _countries = [
     Country('🇫🇷', 'FR', '+33'),
@@ -32,6 +35,50 @@ class _LoginScreenState extends State<LoginScreen> {
   void initState() {
     super.initState();
     _selectedCountry = _countries[0];
+  }
+
+  Future<void> _login() async {
+    if (_selectedCountry == null || _phoneController.text.isEmpty) return;
+
+    setState(() {
+      _loading = true;
+    });
+
+    final String mobile = _selectedCountry!.dialCode + _phoneController.text.trim();
+    final url = Uri.parse('http://127.0.0.1:3001/api/auth/user/login');
+    final body = jsonEncode({
+      "mobile": mobile,
+      "type": "new",
+    });
+
+    try {
+      final response = await http.post(
+        url,
+        headers: {'Content-Type': 'application/json'},
+        body: body,
+      );
+
+      if (response.statusCode == 200) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => VerifyOtpScreen(),
+          ),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Login failed: ${response.body}')),
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Network error: $e')),
+      );
+    } finally {
+      setState(() {
+        _loading = false;
+      });
+    }
   }
 
   @override
@@ -198,15 +245,8 @@ class _LoginScreenState extends State<LoginScreen> {
                 const SizedBox(height: 90),
                 Center(
                   child: GestureDetector(
-                    onTap: _agreed
-                        ? () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => VerifyOtpScreen(),
-                              ),
-                            );
-                          }
+                    onTap: _agreed && !_loading
+                        ? _login
                         : null,
                     child: Stack(
                       alignment: Alignment.center,
@@ -216,6 +256,10 @@ class _LoginScreenState extends State<LoginScreen> {
                           width: 240,
                           height: 60,
                         ),
+                        if (_loading)
+                          const CircularProgressIndicator(
+                            valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                          ),
                       ],
                     ),
                   ),
@@ -228,4 +272,4 @@ class _LoginScreenState extends State<LoginScreen> {
       ),
     );
   }
-} 
+}
